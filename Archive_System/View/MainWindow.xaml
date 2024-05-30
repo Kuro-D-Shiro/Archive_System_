@@ -1,0 +1,290 @@
+﻿<Window x:Class="Archive_System.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Archive_System.ViewModel"
+        xmlns:local="clr-namespace:Archive_System.View"
+        mc:Ignorable="d"
+        Title="Архив" Height="600" MinHeight="800" Width="1700" MinWidth="1700" Icon="/View/Жирность.jpg">
+    <Window.Resources>
+        <Style x:Key="DataGridColumnElementsWrapping">
+            <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <TabControl x:Name="MyTabControl" SelectionChanged="TabControl_SelectionChanged">
+            <TabItem Header="Документы">
+                <TabItem.DataContext>
+                    <vm:DocumentViewModel/>
+                </TabItem.DataContext>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            <TextBox Width="100" SpellCheck.IsEnabled="True" Language="ru-ru" VerticalContentAlignment="Center" 
+                                     Text="{Binding SearchTextBoxContent, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                            <Button Content="🔎︎" Width="30" Margin="0,0,10,0" Command="{Binding SearchItemCommand}"/>
+                            <!--<Label Content="Сортировать по" VerticalAlignment="Center"/>-->
+                            <!--<ComboBox VerticalContentAlignment="Center">
+                                <ComboBoxItem Content="Инвентарный номер"/>
+                                <ComboBoxItem Content="Название"/>
+                                <ComboBoxItem Content="Тема"/>
+                                <ComboBoxItem Content="Количесво"/>
+                                <ComboBoxItem Content="Дата поступления"/>
+                                <ComboBoxItem Content="Место"/>
+                            </ComboBox>
+                            <Label Content="по возрастанию" VerticalAlignment="Center"/>
+                            <CheckBox VerticalAlignment="Center" IsChecked="True" Margin="0,0,10,0"/>
+                            <Button Content="Запуск" Margin="0,0,10,0" Padding="10,0,10,0"/>-->
+                            <Button x:Name="ResetSortingDocumentButton" Content="Сбросить сортировку" Click="ResetSortingDocumentButton_Click" Width="150" Margin="20,0,0,0"/>
+                        </StackPanel>
+                        <!--<StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                            <Button Content="Добавить документ" Margin="0,0,10,0" Width="150" Command="{Binding OpenAddNewDocumentWindowCommand}"/>
+                            <Button Content="Редактировать документ" Margin="0,0,10,0" Width="150" Command="{Binding OpenEditDocumentWindowCommand}"/>
+                            <Button Content="Выдать документ" Margin="0,0,10,0" Width="150" Command="{Binding OpenDocumentIssuanceWindowCommand}"/>
+                            <Button Content="Удалить документ" Foreground="Red" Width="150" Command="{Binding RemoveDocumentCommand}"/>
+                        </StackPanel>-->
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1151*"/>
+                            <ColumnDefinition Width="343*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid x:Name="dataGrid1" Grid.Column="0" SelectionMode="Single" ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                                SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Инвентарный номер" Width="*" Binding="{Binding Id}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Название" Width="*" Binding="{Binding Title}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Тема" Width="*" Binding="{Binding Theme}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Количество" Width="*" Binding="{Binding InstancedCount}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Количество выданных" Width="*" Binding="{Binding IssuedInstancedCount}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Дата поступления" Width="*" Binding="{Binding DateReceived, StringFormat={}{0:dd.MM.yyyy}}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Место(стеллаж/полка/ячейка)" Width="*" Binding="{Binding Cell, TargetNullValue=''}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="200">
+                            <Label Content="Название документа"/>
+                            <TextBox Text="{Binding NewDocumentTitle, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+                            <Label Content="Тема документа"/>
+                            <TextBox Text="{Binding NewDocumentTheme, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+                            <Label Content="Количество экземпляров"/>
+                            <TextBox Text="{Binding NewDocumentInstancedCount, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+                            <Label Content="Номер ячейки"/>
+                            <ComboBox Margin="0,0,0,15" ItemsSource="{Binding EmptyCells, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                SelectedItem="{Binding NewDocumentCell, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEditable="True"/>
+                            <Button Content="Добавить новый документ" Padding="5" Command="{Binding AddNewItemCommand}"/>
+                            <Button Content="Редактировать документ" Margin="0,10,0,0" Padding="5" Command="{Binding EditItemCommand}"/>
+                            <Label Content="Абонент" Margin="0,50,0,0"/>
+                            <ComboBox ItemsSource="{Binding Subscribers, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                SelectedItem="{Binding SelectedSubscriber, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" IsEditable="True"/>
+                            <Label Content="Количество"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="167*"/>
+                                    <ColumnDefinition Width="33*"/>
+                                </Grid.ColumnDefinitions>
+                                <Slider x:Name="slider" Grid.Column="0" Minimum="1" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding IssuedInstsncedCount, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                    Maximum="{Binding SelectedItem.InstancedCount, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding ElementName=slider, Path=Value}" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <Button Content="Выдать документ" Margin="0,10,0,0" Padding="5" Command="{Binding IssueDocumentComand}"/>
+                            <Button Content="Удалить документ" Foreground="Red" Margin="0,50,0,0" Padding="5" Command="{Binding RemoveItemCommand}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!--<StackPanel Grid.Column="1" Margin="50" VerticalAlignment="Center">
+    <Button Content="Добавить документ" Height="40" Margin="0,0,0,20"/>
+    <Button Content="Редактировать документ" Height="40" Margin="0,0,0,20"/>
+    <Button Content="Выдать документ" Height="40" Margin="0,0,0,20"/>
+    <Button Content="Удалить документ" Height="40"/>
+</StackPanel>-->
+                </Grid>
+            </TabItem>
+            <TabItem Header="Ячейки">
+                <TabItem.DataContext>
+                    <vm:CellViewModel/>
+                </TabItem.DataContext>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            <TextBox Width="100" SpellCheck.IsEnabled="True" Language="ru-ru" VerticalContentAlignment="Center" 
+                                Text="{Binding SearchTextBoxContent, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                            <Button Content="🔎︎" Width="30" Margin="0,0,10,0" Command="{Binding SearchItemCommand}"/>
+                            <!--Label Content="Сортировать по" VerticalAlignment="Center"/>
+                            <ComboBox VerticalContentAlignment="Center">
+                                <ComboBoxItem Content="Инвентарный номер"/>
+                                <ComboBoxItem Content="Название"/>
+                                <ComboBoxItem Content="Тема"/>
+                                <ComboBoxItem Content="Количесво"/>
+                                <ComboBoxItem Content="Дата поступления"/>
+                                <ComboBoxItem Content="Место"/>
+                            </ComboBox>
+                            <Label Content="по возрастанию" VerticalAlignment="Center"/>
+                            <CheckBox VerticalAlignment="Center" IsChecked="True" Margin="0,0,10,0"/>
+                            <Button Content="Запуск" Margin="0,0,10,0" Padding="10,0,10,0"/>-->
+                            <Button x:Name="ResetSortingCellButton" Content="Сбросить сортировку" Width="150" Margin="20,0,0,0" Click="ResetSortingCellButton_Click"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1151*"/>
+                            <ColumnDefinition Width="343*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid Grid.Column="0" x:Name="dataGrid2" SelectionMode="Single" ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                            SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Номер ячейки" Width="*" Binding="{Binding Id}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Номер полки" Width="*" Binding="{Binding RackNumber}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Номер стеллажа" Width="*" Binding="{Binding ShalfNumber}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Документ" Width="*" Binding="{Binding Document}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="200">
+                            <Label Content="Номер стеллажа"/>
+                            <TextBox Text="{Binding NewRackNumber, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+                            <Label Content="Номер полки"/>
+                            <TextBox Text="{Binding NewShalfNumber, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+                            <Button Content="Добавить новую ячейку" Padding="5" Margin="0,10,0,0" Command="{Binding AddNewItemCommand}"/>
+                            <Button Content="Поменять место ячейки" Margin="0,10,0,0" Padding="5" Command="{Binding EditItemCommand}"/>
+                            <Button Content="Удалить ячейку" Foreground="Red" Margin="0,50,0,0" Padding="5" Command="{Binding RemoveItemCommand}"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Абоненты">
+                <TabItem.DataContext>
+                    <vm:SubscriberViewModel/>
+                </TabItem.DataContext>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            <TextBox Width="100" SpellCheck.IsEnabled="True" Language="ru-ru" VerticalContentAlignment="Center" 
+                                Text="{Binding SearchTextBoxContent, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                            <Button Content="🔎︎" Width="30" Margin="0,0,10,0" Command="{Binding SearchItemCommand}"/>
+                            <!--<Label Content="Сортировать по" VerticalAlignment="Center"/>
+                            <ComboBox VerticalContentAlignment="Center">
+                                <ComboBoxItem Content="Инвентарный номер"/>
+                                <ComboBoxItem Content="Название"/>
+                                <ComboBoxItem Content="Тема"/>
+                                <ComboBoxItem Content="Количесво"/>
+                                <ComboBoxItem Content="Дата поступления"/>
+                                <ComboBoxItem Content="Место"/>
+                            </ComboBox>
+                            <Label Content="по возрастанию" VerticalAlignment="Center"/>
+                            <CheckBox VerticalAlignment="Center" IsChecked="True" Margin="0,0,10,0"/>
+                            <Button Content="Запуск" Margin="0,0,10,0" Padding="10,0,10,0"/>-->
+                            <Button x:Name="ResetSortingAbonentButton" Content="Сбросить сортировку" Width="150" Margin="20,0,0,0" Click="ResetSortingAbonentButton_Click"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1151*"/>
+                            <ColumnDefinition Width="343*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid SelectionMode="Single" Grid.Column="0" x:Name="dataGrid3" ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Имя" Width="*" Binding="{Binding Name}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Фамилия" Width="*" Binding="{Binding Surname}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Отчество" Width="*" Binding="{Binding Patronimic}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                                <DataGridTextColumn Header="Номер телефона" Width="*" Binding="{Binding PhoneNumber}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="200">
+                            <Label Content="Имя абонента"/>
+                            <TextBox Text="{Binding NewSubscriberName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+                            <Label Content="Фамилия абонента"/>
+                            <TextBox Text="{Binding NewSubscriberSurname, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+                            <Label Content="Отчество абонента"/>
+                            <TextBox Text="{Binding NewSubscriberPatronimic, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+                            <Label Content="Номер телефона абонента"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20*"/>
+                                    <ColumnDefinition Width="139*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="+7" Grid.Column="0" Padding="5,1,0,0"/>
+                                <TextBox Grid.Column="1" MaxLength="10" Text="{Binding NewSubscriberPhoneNumber, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                            </Grid>
+                            <Button Content="Добавить нового абонента" Padding="5" Margin="0,10,0,0" Command="{Binding AddNewItemCommand}"/>
+                            <Button Content="Редактировать абонента" Margin="0,10,0,0" Padding="5" Command="{Binding EditItemCommand}"/>
+                            <Button Content="Удалить абонента" Foreground="Red" Margin="0,50,0,0" Padding="5" Command="{Binding RemoveItemCommand}"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Выданные документы">
+                <TabItem.DataContext>
+                    <vm:IssuedDocumentViewModel/>
+                </TabItem.DataContext>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            <TextBox Width="100" SpellCheck.IsEnabled="True" Language="ru-ru" VerticalContentAlignment="Center" 
+                                Text="{Binding SearchTextBoxContent, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                            <Button Content="🔎︎" Width="30" Margin="0,0,10,0" Command="{Binding SearchItemCommand}"/>
+                            <Button x:Name="ResetSortingIssueDocumentButton" Content="Сбросить сортировку" Width="150" Margin="20,0,0,0" Click="ResetSortingIssueDocumentButton_Click"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                            <Button Content="Удалить выданный документ" Foreground="Red" Width="200" Command="{Binding RemoveItemCommand}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <DataGrid SelectionMode="Single" Grid.Row="1" x:Name="dataGrid4" ItemsSource="{Binding Items, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Документ" Width="*" Binding="{Binding Document}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                            <DataGridTextColumn Header="Абонент" Width="*" Binding="{Binding Subscriber}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                            <DataGridTextColumn Header="Количество" Width="*" Binding="{Binding InstancedCount}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                            <DataGridTextColumn Header="Дата выдачи" Width="*" Binding="{Binding IssueDate, StringFormat={}{0:dd.MM.yyyy}}" ElementStyle="{StaticResource DataGridColumnElementsWrapping}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

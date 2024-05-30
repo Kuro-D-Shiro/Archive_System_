@@ -1,0 +1,25 @@
+﻿<Window x:Class="Archive_System.View.DialogBoxesForTheDocumentTab.EditDocumentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Archive_System.View.DialogBoxesForTheDocumentTab"
+        mc:Ignorable="d"
+        Title="Изменение документа" Height="300" Width="300" ResizeMode="NoResize">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Width="200">
+            <Label Content="Название документа"/>
+            <TextBox 
+                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+            <Label Content="Тема документа"/>
+            <TextBox
+                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+            <Label Content="Количество экземпляров"/>
+            <TextBox 
+                SpellCheck.IsEnabled="True" Language="ru-ru"/>
+            <Label Content="Номер ячейки"/>
+            <ComboBox Margin="0,0,0,15"/>
+            <Button Content="Добавить новый документ" Padding="10"/>
+        </StackPanel>
+    </Grid>
+</Window>

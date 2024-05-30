@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="View\bptfcgbk.0ie~" />
+    <None Remove="View\MainWindow.xaml.cs~RF41d20ac7.TMP" />
+    <None Remove="View\pr2rc0et.asi~" />
+    <None Remove="View\Жирность.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="View\Жирность.jpg" />
+  </ItemGroup>
+
+</Project>
